@@ -463,6 +463,8 @@ add_assets(images/font/*)
 add_assets(images/gui/*)
 add_assets(images/item/*)
 add_assets(images/mob/*)
+add_assets(fonts/*)
+add_assets(lang/*)
 
 vita_create_vpk(minecraftcpp.vpk ${VITA_TITLEID} minecraftcpp.self
   VERSION ${VITA_VERSION}
@@ -473,6 +475,6 @@ vita_create_vpk(minecraftcpp.vpk ${VITA_TITLEID} minecraftcpp.self
   FILE ${CMAKE_CURRENT_LIST_DIR}/module/libgpu_es4_ext.suprx   module/libgpu_es4_ext.suprx
   FILE ${CMAKE_CURRENT_LIST_DIR}/module/libIMGEGL.suprx        module/libIMGEGL.suprx
   FILE ${CMAKE_CURRENT_LIST_DIR}/module/libpvrPSP2_WSEGL.suprx module/libpvrPSP2_WSEGL.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libc.suprx sce_module/libc.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libfios2.suprx sce_module/libfios2.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libc.suprx             sce_module/libc.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libfios2.suprx         sce_module/libfios2.suprx
 )
