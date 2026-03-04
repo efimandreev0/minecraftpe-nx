@@ -36,27 +36,37 @@ public:
 
 	bool tickBuild(Player* p, BuildActionIntention* bai) override {
 		if (Mouse::getButtonState(MouseAction::ACTION_LEFT) != 0) {
-			*bai = BuildActionIntention(BuildActionIntention::BAI_REMOVE | BuildActionIntention::BAI_ATTACK);
-			return true;
+			if (mineHoldTicks >= mineDelayTicks) mineHoldTicks = 0;
+				if (++mineHoldTicks == 1) {
+					*bai = BuildActionIntention(BuildActionIntention::BAI_REMOVE | BuildActionIntention::BAI_ATTACK);
+					return true;
+				}
 		}
+		else {
+			mineHoldTicks = 0;
+		}
+
 		if (Mouse::getButtonState(MouseAction::ACTION_RIGHT) != 0) {
 			if (buildHoldTicks >= buildDelayTicks) buildHoldTicks = 0;
-			if (++buildHoldTicks == 1) {
-				*bai = BuildActionIntention(BuildActionIntention::BAI_BUILD | BuildActionIntention::BAI_INTERACT);
-				return true;
-			}
+				if (++buildHoldTicks == 1) {
+					*bai = BuildActionIntention(BuildActionIntention::BAI_BUILD | BuildActionIntention::BAI_INTERACT);
+					return true;
+				}
 		} else {
 			buildHoldTicks = 0;
 		}
-		return UnifiedTurnBuild::tickBuild(p, bai);
+
+		return false;
 	}
 
 	void onConfigChanged(const Config& c) override {
 		UnifiedTurnBuild::onConfigChanged(c);
 	}
 private:
-	int buildHoldTicks;
-	int buildDelayTicks;
+	int mineHoldTicks = 0;
+	int mineDelayTicks = 5;
+	int buildHoldTicks = 0;
+	int buildDelayTicks = 5;
 };
 
 class VitaMoveInput : public KeyboardInput {
@@ -98,6 +108,12 @@ public:
 		_turnBuild.inventoryArea = _mc->gui.getRectangleArea( _mc->options.isLeftHanded? 1 : -1 );
 		_turnBuild.setSensitivity(c.options->isJoyTouchArea? 1.8f : 1.0f);
 		((ITurnInput*)&_turnBuild)->onConfigChanged(c);
+	}
+
+	bool allowPicking() override {
+		mousex = 960/2; // Mouse::getX();
+		mousey = 544/2; // Mouse::getY();
+		return true; // Mouse::getButtonState(MouseAction::ACTION_LEFT) == MouseAction::DATA_DOWN || Mouse::getButtonState(MouseAction::ACTION_RIGHT) == MouseAction::DATA_DOWN;
 	}
 
 	void render(float alpha) override {

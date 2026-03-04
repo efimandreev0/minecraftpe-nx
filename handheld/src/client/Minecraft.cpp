@@ -744,9 +744,9 @@ void Minecraft::tickInput() {
 						int totalSlots = gui.getNumSlots()-2;
 						int selectedSlot = (key == Keyboard::KEY_RIGHT) ? (player->inventory->selected + 1) : (player->inventory->selected - 1);
 
-						if(selectedSlot >= totalSlots) {
+						if(selectedSlot > totalSlots) {
 							selectedSlot = 0;
-						} else {
+						} else if(selectedSlot < 0){
 							selectedSlot = totalSlots;
 						}
 
@@ -926,10 +926,13 @@ void Minecraft::tickInput() {
 	//        sure just yet what way to go.
 	bool buildHandled = inputHolder->getBuildInput()->tickBuild(player, &bai);
 	if (buildHandled) {
+#ifndef __VITA__
 		if (!bai.isRemoveContinue())
+#endif
 			handleBuildAction(&bai);
 	}
 
+#ifndef __VITA__
 	bool isTryingToDestroyBlock = (options.useMouseForDigging
 			?	(Mouse::isButtonDown(MouseAction::ACTION_LEFT) && mouseDiggable)
 			:	Keyboard::isKeyDown(options.keyDestroy.key))
@@ -942,6 +945,7 @@ void Minecraft::tickInput() {
 		|| options.useMouseForDigging && Mouse::isButtonDown(MouseAction::ACTION_RIGHT));
 #else
 	handleMouseDown(MouseAction::ACTION_LEFT, isTryingToDestroyBlock || (buildHandled && bai.isInteract()));
+#endif
 #endif
 
 	lastTickTime = getTimeMs();

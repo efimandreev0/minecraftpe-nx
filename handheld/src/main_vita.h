@@ -372,23 +372,19 @@ void handleController() {
 
 	// psvita: mouse
 	if(changedButtons & SCE_CTRL_RTRIGGER) {
-		//Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER), width / 2, height / 2);
-		Keyboard::feed(Keyboard::KEY_X, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER));
+		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER), 0,0);
 	}
 
 	if(changedButtons & SCE_CTRL_LTRIGGER) {
-		//Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER), width / 2, height / 2);
-		Keyboard::feed(Keyboard::KEY_Z, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER));
+		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER), 0,0);
 	}
 
 	// pstv: mouse
 	if(changedButtons & SCE_CTRL_R1) {
-		//Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_R1), width / 2, height / 2);
-		Keyboard::feed(Keyboard::KEY_X, BTN_STATE(ctrl.buttons, SCE_CTRL_R1));
+		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_R1), 0,0);
 	}
 	if(changedButtons & SCE_CTRL_L1) {
-		//Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_L1), width / 2, height / 2);
-		Keyboard::feed(Keyboard::KEY_Z, BTN_STATE(ctrl.buttons, SCE_CTRL_R1));
+		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_L1), 0,0);
 	}
 
 }
