@@ -370,7 +370,7 @@ void handleController() {
 		Keyboard::feed(Keyboard::KEY_ESCAPE, BTN_STATE(ctrl.buttons, SCE_CTRL_START));
 	}
 
-	// psvita: mouse
+	// psvita: placing and breaking blocks
 	if(changedButtons & SCE_CTRL_RTRIGGER) {
 		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER), 0,0);
 	}
@@ -379,7 +379,7 @@ void handleController() {
 		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER), 0,0);
 	}
 
-	// pstv: mouse
+	// pstv: placing and breaking blocks
 	if(changedButtons & SCE_CTRL_R1) {
 		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_R1), 0,0);
 	}

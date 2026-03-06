@@ -67,7 +67,7 @@ void Options::initDefaultValues() {
 	username   = "Vita";
 	keyCraft   = KeyMapping("key.crafting", Keyboard::KEY_C);
 	keyUse     = KeyMapping("key.use", Keyboard::KEY_X);
-	keyDestroy = KeyMapping("key.use", Keyboard::KEY_Z);
+	keyDestroy = KeyMapping("key.destroy", Keyboard::KEY_Z);
 #endif
 
 	//const int Unused = 99999;

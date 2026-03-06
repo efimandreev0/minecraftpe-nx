@@ -58,12 +58,11 @@ public:
 		}
 
 		if (Mouse::getButtonState(MouseAction::ACTION_RIGHT) != 0) {
-			if (buildHoldTicks >= buildDelayTicks) buildHoldTicks = 0;
-				if (++buildHoldTicks == 1) {
+				if ((buildHoldTicks++ % buildDelayTicks) == 0) {
 					*bai = BuildActionIntention(BuildActionIntention::BAI_BUILD | BuildActionIntention::BAI_INTERACT);
 					return true;
 				}
-		} else {
+ 		} else {
 			buildHoldTicks = 0;
 		}
 

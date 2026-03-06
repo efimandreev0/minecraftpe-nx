@@ -939,6 +939,7 @@ void Minecraft::tickInput() {
 		||	(buildHandled && bai.isRemove());
 
 	TIMER_POP_PUSH("handlemouse");
+
 #ifdef RPI
 	handleMouseDown(MouseAction::ACTION_LEFT, isTryingToDestroyBlock);
 	handleMouseClick(buildHandled && bai.isInteract()
@@ -964,12 +965,16 @@ void Minecraft::tickInput() {
 #endif
 }
 
+//void Minecraft::handleMouseDown(int button, bool down) {
 void Minecraft::handleMouseDown(int button, bool down) {
 #ifndef STANDALONE_SERVER
-//#if !defined(_WIN32) && !defined(RPI) && !defined(PSVITA)
 #ifndef RPI
 	if(player->isUsingItem()) {
+#if defined(__VITA__) || defined(_WIN32) // honestly this seems like just a genuine bug in the game tbh
+		if(!down && !Keyboard::isKeyDown(options.keyUse.key) && !Mouse::isButtonDown(MouseAction::ACTION_RIGHT)) {
+#else
 		if(!down && !Keyboard::isKeyDown(options.keyUse.key)) {
+#endif
 			gameMode->releaseUsingItem(player);
 		}
 		return;
