@@ -1,23 +1,33 @@
 #include "Options.h"
 #include "OptionStrings.h"
 #include "Minecraft.h"
+#include "player/LocalPlayer.h"
 #include "../platform/log.h"
 #include "../world/Difficulty.h"
 #include <cmath>
 #include <sstream>
+
 /*static*/
 bool Options::debugGl = false;
+
+const char* RenderDistanceKey = "gfx_render_distance";
 
 void Options::initDefaultValues() {
 	difficulty = Difficulty::NORMAL;
 	hideGui = false;
-	thirdPersonView = false;
+	thirdPersonView = 0;
 	renderDebug = false;
+	debugLogging = false;
+	fpsDisplay = 0;
+	autoJump = true;
 	isFlying = false;
 	smoothCamera = true;
 	fixedCamera = false;
 	flySpeed = 1;
 	cameraSpeed = 1;
+	showDayCounter = false;
+	fovSetting = 70.0f;
+	showCoordinates = false;
 	guiScale = 0;
 
 	useMouseForDigging = false;
@@ -30,20 +40,20 @@ void Options::initDefaultValues() {
 	sound = 1;
 	sensitivity = 0.5f;
 	invertYMouse = false;
-	viewDistance = 2;
+	viewDistance = 0.5f;
 	bobView = true;
 	anaglyph3d = false;
-	limitFramerate = false;
-	fancyGraphics = true;//false;
-	ambientOcclusion = false;
+	vsync = true;
+	msaa4x = false;
+	fancyGraphics = true;
+	ambientOcclusion = true;
+	highPerformance = false;
 	if(minecraft->supportNonTouchScreen())
 		useTouchScreen = false;
 	else
 		useTouchScreen = true;
 	pixelsPerMillimeter = minecraft->platform()->getPixelsPerMillimeter();
-	//useMouseForDigging = true;
 
-	//skin     = "Default";
 	username = "Steve";
 	serverVisible = true;
 
@@ -54,23 +64,20 @@ void Options::initDefaultValues() {
 	keyJump  = KeyMapping("key.jump", Keyboard::KEY_SPACE);
 	keyBuild = KeyMapping("key.inventory", Keyboard::KEY_E);
 	keySneak = KeyMapping("key.sneak", Keyboard::KEY_LSHIFT);
-#ifndef RPI
+	#ifndef RPI
 	keyCraft = KeyMapping("key.crafting", Keyboard::KEY_Q);
 	keyDrop  = KeyMapping("key.drop", Keyboard::KEY_Q);
 	keyChat  = KeyMapping("key.chat", Keyboard::KEY_T);
 	keyFog   = KeyMapping("key.fog", Keyboard::KEY_F);
-	keyDestroy=KeyMapping("key.destroy", Keyboard::KEY_X); // @todo @fix
+	keyDestroy=KeyMapping("key.destroy", 88);
 	keyUse   = KeyMapping("key.use", Keyboard::KEY_U);
-#endif
-
-#ifdef __VITA__
-	username   = "Vita";
+	#endif
+	#ifdef __VITA__
+	username   = "Vita"; // TODO: read from np libraries
 	keyCraft   = KeyMapping("key.crafting", Keyboard::KEY_C);
 	keyUse     = KeyMapping("key.use", Keyboard::KEY_X);
 	keyDestroy = KeyMapping("key.destroy", Keyboard::KEY_Z);
-#endif
-
-	//const int Unused = 99999;
+	#endif
 	keyMenuNext     = KeyMapping("key.menu.next",     40);
 	keyMenuPrevious = KeyMapping("key.menu.previous", 38);
 	keyMenuOk       = KeyMapping("key.menu.ok",       13);
@@ -95,64 +102,82 @@ void Options::initDefaultValues() {
 	keyMappings[k++] = &keyMenuOk;
 	keyMappings[k++] = &keyMenuCancel;
 
-//	"Polymorphism" at it's worst. At least it's better to have it here
-//	for now, then to have it spread all around the game code (even if
-//	it would be slightly better performance with it inlined. Should
-//  probably create separate subclasses (or read from file). @fix @todo.
-#if defined(ANDROID) || defined(__APPLE__) || defined(RPI)
-    viewDistance = 2;
-    thirdPersonView = false;
+	#if defined(ANDROID) || defined(__APPLE__) || defined(RPI)
+	viewDistance = 2.0f;
+	thirdPersonView = 0;
 	useMouseForDigging = false;
-	fancyGraphics = false;
+	fancyGraphics = true;
+	ambientOcclusion = true;
 
-	//renderDebug = true;
 	#if !defined(RPI)
-		keyUp.key		= 19;
-		keyDown.key		= 20;
-		keyLeft.key		= 21;
-		keyRight.key	= 22;
-		keyJump.key		= 23;
-		keyUse.key		= 103;
-		keyDestroy.key	= 102;
-		keyCraft.key    = 109;
+	keyUp.key		= 19;
+	keyDown.key		= 20;
+	keyLeft.key		= 21;
+	keyRight.key	= 22;
+	keyJump.key		= 23;
+	keyUse.key		= 103;
+	keyDestroy.key	= 102;
+	keyCraft.key    = 109;
 
-		keyMenuNext.key     = 20;
-		keyMenuPrevious.key = 19;
-		keyMenuOk.key       = 23;
-		keyMenuCancel.key   = 4;
+	keyMenuNext.key     = 20;
+	keyMenuPrevious.key = 19;
+	keyMenuOk.key       = 23;
+	keyMenuCancel.key   = 4;
 	#endif
-#endif
+	#endif
+}
 
-#if defined(RPI)
-	username = "StevePi";
-	sensitivity *= 0.4f;
-	useMouseForDigging = true;
-#endif
+void Options::resetDebugOptions() {
+	hideGui = false;
+	renderDebug = false;
+	fpsDisplay = 0;
+	smoothCamera = false;
+	fixedCamera = false;
+	flySpeed = 1.0f;
+	anaglyph3d = false;
+	debugLogging = false;
+
+	if (minecraft->player) {
+		minecraft->player->noPhysics = false;
+		minecraft->player->abilities.flying = false;
+	}
+
+	save();
 }
 
 const Options::Option
-	Options::Option::MUSIC				 (0, "options.music",		true, false),
-	Options::Option::SOUND				 (1, "options.sound",		true, false),
-	Options::Option::INVERT_MOUSE		 (2, "options.invertMouse",	false, true),
-	Options::Option::SENSITIVITY		 (3, "options.sensitivity",	true, false),
-	Options::Option::RENDER_DISTANCE	 (4, "options.renderDistance",false, false),
-	Options::Option::VIEW_BOBBING		 (5, "options.viewBobbing",	false, true),
-	Options::Option::ANAGLYPH			 (6, "options.anaglyph",		false, true),
-	Options::Option::LIMIT_FRAMERATE	 (7, "options.limitFramerate",false, true),
-	Options::Option::DIFFICULTY			 (8, "options.difficulty",	false, false),
-	Options::Option::GRAPHICS			 (9, "options.graphics",		false, false),
-	Options::Option::AMBIENT_OCCLUSION	 (10, "options.ao",		false, true),
-	Options::Option::GUI_SCALE			 (11, "options.guiScale",	false, false),
-	Options::Option::THIRD_PERSON		 (12, "options.thirdperson",	false, true),
-    Options::Option::HIDE_GUI			 (13, "options.hidegui",     false, true),
-	Options::Option::SERVER_VISIBLE		 (14, "options.servervisible", false, true),
-	Options::Option::LEFT_HANDED		 (15, "options.lefthanded", false, true),
-	Options::Option::USE_TOUCHSCREEN	 (16, "options.usetouchscreen", false, true),
-	Options::Option::USE_TOUCH_JOYPAD	 (17, "options.usetouchpad", false, true),
-	Options::Option::DESTROY_VIBRATION   (18, "options.destroyvibration", false, true),
-	Options::Option::PIXELS_PER_MILLIMETER(19, "options.pixelspermilimeter", true, false);
+Options::Option::MUSIC				 (0, "options.music",		true, false),
+Options::Option::SOUND				 (1, "options.sound",		true, false),
+Options::Option::INVERT_MOUSE		 (2, "options.invertMouse",	false, true),
+Options::Option::SENSITIVITY		 (3, "options.sensitivity",	true, false),
+Options::Option::RENDER_DISTANCE	 (4, "options.renderDistance", false, false),
+Options::Option::VIEW_BOBBING		 (5, "options.viewBobbing",	false, true),
+Options::Option::ANAGLYPH			 (6, "options.anaglyph",		false, true),
+Options::Option::LIMIT_FRAMERATE	 (7, "options.limitFramerate",false, true),
+Options::Option::DIFFICULTY			 (8, "options.difficulty",	false, false),
+Options::Option::GRAPHICS			 (9, "options.graphics",		false, false),
+Options::Option::AMBIENT_OCCLUSION	 (10, "options.ao",		false, true),
+Options::Option::GUI_SCALE			 (11, "options.guiScale",	false, false),
+Options::Option::THIRD_PERSON		 (12, "options.thirdperson",	false, true),
+Options::Option::HIDE_GUI			 (13, "options.hidegui",     false, true),
+Options::Option::SERVER_VISIBLE		 (14, "options.servervisible", false, true),
+Options::Option::LEFT_HANDED		 (15, "options.lefthanded", false, true),
+Options::Option::USE_TOUCHSCREEN	 (16, "options.usetouchscreen", false, true),
+Options::Option::USE_TOUCH_JOYPAD	 (17, "options.usetouchpad", false, true),
+Options::Option::DESTROY_VIBRATION   (18, "options.destroyvibration", false, true),
+Options::Option::HIGH_PERFORMANCE    (19, "options.highPerformance", false, true),
+Options::Option::PIXELS_PER_MILLIMETER(20, "options.pixelspermilimeter", true, false);
 
-/* private */
+const Options::Option Options::Option::RENDER_DEBUG        = Options::Option(21, "Pause Menu Debug Info", false, true);
+const Options::Option Options::Option::FPS_METER           = Options::Option(22, "Show FPS Meter", false, true);
+const Options::Option Options::Option::VSYNC               = Options::Option(23, "VSync", false, true);
+const Options::Option Options::Option::RPI_MENUS           = Options::Option(24, "RPI Menus", false, true);
+const Options::Option Options::Option::DAY_COUNTER         = Options::Option(25, "Day Counter", false, true);
+const Options::Option Options::Option::FOV                 = Options::Option(26, "FOV", true, false);
+const Options::Option Options::Option::SHOW_COORDINATES    = Options::Option(27, "Show Coordinates", false, true);
+const Options::Option Options::Option::AUTO_JUMP           = Options::Option(28, "Auto Jump", false, true);
+const Options::Option Options::Option::MSAA_4X             = Options::Option(29, "MSAA 4x", false, true);
+
 const float Options::SOUND_MIN_VALUE = 0.0f;
 const float Options::SOUND_MAX_VALUE = 1.0f;
 const float Options::MUSIC_MIN_VALUE = 0.0f;
@@ -161,12 +186,7 @@ const float Options::SENSITIVITY_MIN_VALUE = 0.0f;
 const float Options::SENSITIVITY_MAX_VALUE = 1.0f;
 const float Options::PIXELS_PER_MILLIMETER_MIN_VALUE = 3.0f;
 const float Options::PIXELS_PER_MILLIMETER_MAX_VALUE = 4.0f;
-const int DIFFICULY_LEVELS[] = {
-	Difficulty::PEACEFUL,
-	Difficulty::NORMAL
-};
 
-/*private*/
 const char* Options::RENDER_DISTANCE_NAMES[] = {
 	"options.renderDistance.far",
 	"options.renderDistance.normal",
@@ -174,7 +194,6 @@ const char* Options::RENDER_DISTANCE_NAMES[] = {
 	"options.renderDistance.tiny"
 };
 
-/*private*/
 const char* Options::DIFFICULTY_NAMES[] = {
 	"options.difficulty.peaceful",
 	"options.difficulty.easy",
@@ -182,7 +201,6 @@ const char* Options::DIFFICULTY_NAMES[] = {
 	"options.difficulty.hard"
 };
 
-/*private*/
 const char* Options::GUI_SCALE[] = {
 	"options.guiScale.auto",
 	"options.guiScale.small",
@@ -190,171 +208,130 @@ const char* Options::GUI_SCALE[] = {
 	"options.guiScale.large"
 };
 
-void Options::update()
-{
-	viewDistance = 2;
+void Options::set(const Options::Option* item, float value) {
+	if (item == &Options::Option::MUSIC) {
+		music = value;
+	} else if (item == &Options::Option::SOUND) {
+		sound = value;
+	} else if (item == &Options::Option::SENSITIVITY) {
+		sensitivity = value;
+	} else if (item == &Options::Option::RENDER_DISTANCE) {
+		viewDistance = value;
+	} else if (item == &Options::Option::PIXELS_PER_MILLIMETER) {
+		pixelsPerMillimeter = value;
+	} else if (item == &Options::Option::FOV) {
+		fovSetting = 40.0f + value * 60.0f;
+	}
+	notifyOptionUpdate(item, value);
+	save();
+}
+
+void Options::set(const Options::Option* item, int value) {
+	if (item == &Options::Option::DIFFICULTY) {
+		difficulty = value;
+	} else if (item == &Options::Option::GUI_SCALE) {
+		guiScale = value;
+	}
+	notifyOptionUpdate(item, value);
+	save();
+}
+
+
+void Options::update() {
+	viewDistance = 0.5f;
+	highPerformance = false;
+	sensitivity = 0.5f;
 	StringVector optionStrings = optionsFile.getOptionStrings();
 	for (unsigned int i = 0; i < optionStrings.size(); i += 2) {
 		const std::string& key = optionStrings[i];
 		const std::string& value = optionStrings[i+1];
 
-        //LOGI("reading key: %s (%s)\n", key.c_str(), value.c_str());
-        
-		// Multiplayer
 		if (key == OptionStrings::Multiplayer_Username) username = value;
 		if (key == OptionStrings::Multiplayer_ServerVisible) readBool(value, serverVisible);
 
-		// Controls
-        if (key == OptionStrings::Controls_Sensitivity) {
-            float sens;
-            if (readFloat(value, sens)) {
-                // sens is in range [0,1] with default/center at 0.5 (for aesthetics)
-                // We wanna map it to something like [0.3, 0.9] BUT keep 0.5 @ ~0.5...
-                sensitivity = 0.3f + std::pow(1.1f * sens, 1.3f) * 0.42f;
-            }
-        }
-		if (key == OptionStrings::Controls_InvertMouse) {
-			readBool(value, invertYMouse);
-		}
-		if (key == OptionStrings::Controls_IsLefthanded) {
-			readBool(value, isLeftHanded);
-		}
-		if (key == OptionStrings::Controls_UseTouchJoypad) {
-			readBool(value, isJoyTouchArea);
-			if (!minecraft->useTouchscreen())
-				isJoyTouchArea = false;
-		}
-
-		// Feedback
-		if (key == OptionStrings::Controls_FeedbackVibration)
-			readBool(value, destroyVibration);
-
-		// Graphics
-		if (key == OptionStrings::Graphics_Fancy) {
-			readBool(value, fancyGraphics);
-		}
-		if (key == OptionStrings::Graphics_LowQuality) {
-			bool isLow;
-			readBool(value, isLow);
-			if (isLow) {
-				viewDistance = 3;
-				fancyGraphics = false;
+		if (key == OptionStrings::Controls_Sensitivity) {
+			float sens;
+			if (readFloat(value, sens)) {
+				sensitivity = sens;
 			}
 		}
-		// Game
+		if (key == RenderDistanceKey) {
+			readFloat(value, viewDistance);
+			if (viewDistance > 3.0f) viewDistance = 3.0f;
+			if (viewDistance < 0.0f) viewDistance = 0.0f;
+		}
+		if (key == OptionStrings::Graphics_HighPerformance) {
+			readBool(value, highPerformance);
+		}
+		if (key == OptionStrings::Controls_InvertMouse) readBool(value, invertYMouse);
+		if (key == OptionStrings::Controls_IsLefthanded) readBool(value, isLeftHanded);
+		if (key == OptionStrings::Controls_UseTouchJoypad) {
+			readBool(value, isJoyTouchArea);
+			if (!minecraft->useTouchscreen()) isJoyTouchArea = false;
+		}
+		if (key == "auto_jump") readBool(value, autoJump);
+		if (key == OptionStrings::Controls_FeedbackVibration) readBool(value, destroyVibration);
+		if (key == OptionStrings::Graphics_Fancy) readBool(value, fancyGraphics);
+		if (key == "render_debug") readBool(value, renderDebug);
+		if (key == "fps_display") readInt(value, fpsDisplay);
+		if (key == "vsync") readBool(value, vsync);
+		if (key == "msaa4x") readBool(value, msaa4x);
 		if (key == OptionStrings::Game_DifficultyLevel) {
 			readInt(value, difficulty);
-			// Only support peaceful and normal right now
 			if (difficulty != Difficulty::PEACEFUL && difficulty != Difficulty::NORMAL)
 				difficulty = Difficulty::NORMAL;
 		}
+		if (key == "music") readFloat(value, music);
+		if (key == "sound") readFloat(value, sound);
+		if (key == "hideGUI") readBool(value, hideGui);
+		if (key == "thirdPersonView") readInt(value, thirdPersonView);
+		if (key == "ambientOcclusion") readBool(value, ambientOcclusion);
+		if (key == "bobView") readBool(value, bobView);
+		if (key == "anaglyph3d") readBool(value, anaglyph3d);
+		if (key == "rpiMenus") readBool(value, rpiMenus);
+		if (key == "showDayCounter") readBool(value, showDayCounter);
+		if (key == "fovSetting") readFloat(value, fovSetting);
+		if (key == "showCoordinates") readBool(value, showCoordinates);
 	}
-    
-#ifdef __APPLE__
-//    if (minecraft->isSuperFast()) {
-//        viewDistance = (viewDistance>0)? --viewDistance : 0;
-//    }
-//    LOGI("Is this card super fast?: %d\n", viewDistance);
-#endif
-    
-    //LOGI("Lefty is: %d\n", isLeftHanded);
 }
 
-void Options::load()
-{
-	int a = 0;
-	//try {
-	//    if (!optionsFile.exists()) return;
-	//    BufferedReader br = /*new*/ BufferedReader(/*new*/ FileReader(optionsFile));
-	//    std::string line = "";
-	//    while ((line = br.readLine()) != NULL) {
-	//        std::string[] cmds = line.split(":");
-	//        if (cmds[0].equals("music")) music = readFloat(cmds[1]);
-	//        if (cmds[0].equals("sound")) sound = readFloat(cmds[1]);
-	//        if (cmds[0].equals("mouseSensitivity")) sensitivity = readFloat(cmds[1]);
-	//        if (cmds[0].equals("invertYMouse")) invertYMouse = cmds[1].equals("true");
-	//        if (cmds[0].equals("viewDistance")) viewDistance = Integer.parseInt(cmds[1]);
-	//        if (cmds[0].equals("guiScale")) guiScale = Integer.parseInt(cmds[1]);
-	//        if (cmds[0].equals("bobView")) bobView = cmds[1].equals("true");
-	//        if (cmds[0].equals("anaglyph3d")) anaglyph3d = cmds[1].equals("true");
-	//        if (cmds[0].equals("limitFramerate")) limitFramerate = cmds[1].equals("true");
-	//        if (cmds[0].equals("difficulty")) difficulty = Integer.parseInt(cmds[1]);
-	//        if (cmds[0].equals("fancyGraphics")) fancyGraphics = cmds[1].equals("true");
-	//        if (cmds[0].equals("ao")) ambientOcclusion = cmds[1].equals("true");
-	//        if (cmds[0].equals("skin")) skin = cmds[1];
-	//        if (cmds[0].equals("lastServer") && cmds.length >= 2) lastMpIp = cmds[1];
-
-	//        for (int i = 0; i < keyMappings.length; i++) {
-	//            if (cmds[0].equals("key_" + keyMappings[i].name)) {
-	//                keyMappings[i].key = Integer.parseInt(cmds[1]);
-	//            }
-	//        }
-	//    }
-	//    br.close();
-	//} catch (Exception e) {
-	//    System.out.println("Failed to load options");
-	//    e.printStackTrace();
-	//}
+void Options::load() {
 }
 
-void Options::save()
-{
+void Options::save() {
 	StringVector stringVec;
-	// Game
+	addOptionToSaveOutput(stringVec, OptionStrings::Multiplayer_Username, username);
 	addOptionToSaveOutput(stringVec, OptionStrings::Multiplayer_ServerVisible, serverVisible);
 	addOptionToSaveOutput(stringVec, OptionStrings::Game_DifficultyLevel, difficulty);
-
-	// Input
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_InvertMouse, invertYMouse);
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_Sensitivity, sensitivity);
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_IsLefthanded, isLeftHanded);
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_UseTouchScreen, useTouchScreen);
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_UseTouchJoypad, isJoyTouchArea);
+	addOptionToSaveOutput(stringVec, "auto_jump", autoJump);
 	addOptionToSaveOutput(stringVec, OptionStrings::Controls_FeedbackVibration, destroyVibration);
-// 
-// 	static const Option MUSIC;
-// 	static const Option SOUND;
-// 	static const Option INVERT_MOUSE;
-// 	static const Option SENSITIVITY;
-// 	static const Option RENDER_DISTANCE;
-// 	static const Option VIEW_BOBBING;
-// 	static const Option ANAGLYPH;
-// 	static const Option LIMIT_FRAMERATE;
-// 	static const Option DIFFICULTY;
-// 	static const Option GRAPHICS;
-// 	static const Option AMBIENT_OCCLUSION;
-// 	static const Option GUI_SCALE;
-// 
-// 	static const Option THIRD_PERSON;
-// 	static const Option HIDE_GUI;
-	//try {
-	//    PrintWriter pw = /*new*/ PrintWriter(/*new*/ FileWriter(optionsFile));
+	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_HighPerformance, highPerformance);
+	addOptionToSaveOutput(stringVec, "render_debug", renderDebug);
+	addOptionToSaveOutput(stringVec, "fps_display", fpsDisplay);
+	addOptionToSaveOutput(stringVec, RenderDistanceKey, viewDistance);
+	addOptionToSaveOutput(stringVec, "music", music);
+	addOptionToSaveOutput(stringVec, "sound", sound);
+	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_Fancy, fancyGraphics);
+	addOptionToSaveOutput(stringVec, "hideGUI", hideGui);
+	addOptionToSaveOutput(stringVec, "vsync", vsync);
+	addOptionToSaveOutput(stringVec, "msaa4x", msaa4x);
+	addOptionToSaveOutput(stringVec, "thirdPersonView", (int)thirdPersonView);
+	addOptionToSaveOutput(stringVec, "ambientOcclusion", ambientOcclusion);
+	addOptionToSaveOutput(stringVec, "bobView", bobView);
+	addOptionToSaveOutput(stringVec, "anaglyph3d", anaglyph3d);
+	addOptionToSaveOutput(stringVec, "rpiMenus", rpiMenus);
+	addOptionToSaveOutput(stringVec, "showDayCounter", showDayCounter);
+	addOptionToSaveOutput(stringVec, "fovSetting", fovSetting);
+	addOptionToSaveOutput(stringVec, "showCoordinates", showCoordinates);
 
-	//    pw.println("music:" + music);
-	//    pw.println("sound:" + sound);
-	//    pw.println("invertYMouse:" + invertYMouse);
-	//    pw.println("mouseSensitivity:" + sensitivity);
-	//    pw.println("viewDistance:" + viewDistance);
-	//    pw.println("guiScale:" + guiScale);
-	//    pw.println("bobView:" + bobView);
-	//    pw.println("anaglyph3d:" + anaglyph3d);
-	//    pw.println("limitFramerate:" + limitFramerate);
-	//    pw.println("difficulty:" + difficulty);
-	//    pw.println("fancyGraphics:" + fancyGraphics);
-	//    pw.println("ao:" + ambientOcclusion);
-	//    pw.println("skin:" + skin);
-	//    pw.println("lastServer:" + lastMpIp);
-
-	//    for (int i = 0; i < keyMappings.length; i++) {
-	//        pw.println("key_" + keyMappings[i].name + ":" + keyMappings[i].key);
-	//    }
-
-	//    pw.close();
-	//} catch (Exception e) {
-	//    System.out.println("Failed to save options");
-	//    e.printStackTrace();
-	//}
+	optionsFile.save(stringVec);
 }
+
 void Options::addOptionToSaveOutput(StringVector& stringVector, std::string name, bool boolValue) {
 	std::stringstream ss;
 	ss << name << ":" << boolValue;
@@ -370,98 +347,74 @@ void Options::addOptionToSaveOutput(StringVector& stringVector, std::string name
 	ss << name << ":" << intValue;
 	stringVector.push_back(ss.str());
 }
+void Options::addOptionToSaveOutput(StringVector& stringVector, std::string name, const std::string& strValue) {
+	std::stringstream ss;
+	ss << name << ":" << strValue;
+	stringVector.push_back(ss.str());
+}
 
-std::string Options::getMessage( const Option* item )
-{
+std::string Options::getMessage(const Option* item) {
+	if (item == &Options::Option::RENDER_DISTANCE) {
+		int dist = (int)viewDistance;
+		if (dist < 0) dist = 0;
+		if (dist > 3) dist = 3;
+		return RENDER_DISTANCE_NAMES[dist];
+	}
+	if (item == &Options::Option::DIFFICULTY) {
+		int diff = difficulty;
+		if (diff != 0 && diff != 2) diff = 2; // Basic validation
+		return DIFFICULTY_NAMES[diff];
+	}
+	if (item == &Options::Option::GRAPHICS) {
+		return fancyGraphics ? "options.graphics.fancy" : "options.graphics.fast";
+	}
+	if (item == &Options::Option::GUI_SCALE) {
+		return GUI_SCALE[guiScale];
+	}
+	if (item == &Options::Option::FPS_METER) {
+		static const char* fpsNames[] = { "OFF", "FPS Only", "Both" };
+		return fpsNames[fpsDisplay % 3];
+	}
+	if (item == &Options::Option::THIRD_PERSON) {
+		static const char* tpNames[] = { "OFF", "Back", "Front" };
+		return tpNames[thirdPersonView % 3];
+	}
+	if (item == &Options::Option::MSAA_4X) {
+		return msaa4x ? "On (restart)" : "Off (restart)";
+	}
+
+	if (item->isBoolean()) {
+		return getBooleanValue(item) ? "options.on" : "options.off";
+	}
+
 	return "Options::getMessage - Not implemented";
-
-	//Language language = Language.getInstance();
-	//std::string caption = language.getElement(item.getCaptionId()) + ": ";
-
-	//if (item.isProgress()) {
-	//    float progressValue = getProgressValue(item);
-
-	//    if (item == Option.SENSITIVITY) {
-	//        if (progressValue == 0) {
-	//            return caption + language.getElement("options.sensitivity.min");
-	//        }
-	//        if (progressValue == 1) {
-	//            return caption + language.getElement("options.sensitivity.max");
-	//        }
-	//        return caption + (int) (progressValue * 200) + "%";
-	//    } else {
-	//        if (progressValue == 0) {
-	//            return caption + language.getElement("options.off");
-	//        }
-	//        return caption + (int) (progressValue * 100) + "%";
-	//    }
-	//} else if (item.isBoolean()) {
-
-	//    bool booleanValue = getBooleanValue(item);
-	//    if (booleanValue) {
-	//        return caption + language.getElement("options.on");
-	//    }
-	//    return caption + language.getElement("options.off");
-	//} else if (item == Option.RENDER_DISTANCE) {
-	//    return caption + language.getElement(RENDER_DISTANCE_NAMES[viewDistance]);
-	//} else if (item == Option.DIFFICULTY) {
-	//    return caption + language.getElement(DIFFICULTY_NAMES[difficulty]);
-	//} else if (item == Option.GUI_SCALE) {
-	//    return caption + language.getElement(GUI_SCALE[guiScale]);
-	//} else if (item == Option.GRAPHICS) {
-	//    if (fancyGraphics) {
-	//        return caption + language.getElement("options.graphics.fancy");
-	//    }
-	//    return caption + language.getElement("options.graphics.fast");
-	//}
-
-	//return caption;
 }
 
-/*static*/
 bool Options::readFloat(const std::string& string, float& value) {
-	if (string == "true" || string == "YES")  { value = 1; return true; }
-	if (string == "false" || string == "NO") { value = 0; return true; }
-#ifdef _WIN32
-	if (sscanf_s(string.c_str(), "%f", &value))
-		return true;
-#else
-	if (sscanf(string.c_str(), "%f", &value))
-		return true;
-#endif
-	return false;
+	if (string == "true" || string == "1" || string == "YES")  { value = 1.0f; return true; }
+	if (string == "false" || string == "0" || string == "NO") { value = 0.0f; return true; }
+	return sscanf(string.c_str(), "%f", &value) == 1;
 }
 
-/*static*/
 bool Options::readInt(const std::string& string, int& value) {
-	if (string == "true" || string == "YES")  { value = 1; return true; }
-	if (string == "false" || string == "NO") { value = 0; return true; }
-#ifdef _WIN32
-	if (sscanf_s(string.c_str(), "%d", &value))
-		return true;
-#else
-	if (sscanf(string.c_str(), "%d", &value))
-		return true;
-#endif
-	return false;
+	if (string == "true" || string == "1" || string == "YES")  { value = 1; return true; }
+	if (string == "false" || string == "0" || string == "NO") { value = 0; return true; }
+	return sscanf(string.c_str(), "%d", &value) == 1;
 }
 
-/*static*/
 bool Options::readBool(const std::string& string, bool& value) {
 	std::string s = Util::stringTrim(string);
-	if (string == "true" || string == "1" || string == "YES")  { value = true;  return true; }
-	if (string == "false" || string == "0" || string == "NO") { value = false; return true; }
+	if (s == "true" || s == "1" || s == "YES")  { value = true;  return true; }
+	if (s == "false" || s == "0" || s == "NO") { value = false; return true; }
 	return false;
 }
 
 void Options::notifyOptionUpdate( const Option* option, bool value ) {
 	minecraft->optionUpdated(option, value);
 }
-
 void Options::notifyOptionUpdate( const Option* option, float value ) {
 	minecraft->optionUpdated(option, value);
 }
-
 void Options::notifyOptionUpdate( const Option* option, int value ) {
 	minecraft->optionUpdated(option, value);
 }

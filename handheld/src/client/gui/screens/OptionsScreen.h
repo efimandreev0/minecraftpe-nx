@@ -3,6 +3,7 @@
 
 #include "../Screen.h"
 #include "../components/Button.h"
+#include "../../../platform/input/Keyboard.h"
 
 class ImageButton;
 class OptionsPane;
@@ -21,18 +22,23 @@ public:
 	void buttonClicked( Button* button );
 	void render(int xm, int ym, float a);
 	void removed();
-	void selectCategory(int index);
 
 	virtual void mouseClicked( int x, int y, int buttonNum );
 	virtual void mouseReleased( int x, int y, int buttonNum );
 	virtual void tick();
+	virtual void keyPressed(int key);
+	virtual void keyboardNewChar(char c);
 private:
 	Touch::THeader* bHeader;
 	ImageButton* btnClose;
-	std::vector<Touch::TButton*> categoryButtons;
-	std::vector<OptionsPane*> optionPanes;
-	OptionsPane* currentOptionPane;
-	int selectedCategory;
+	Button* btnNextPage;
+	Button* btnPrevPage;
+	Button* btnResetFov;
+	OptionsPane* optionPane;
+	bool isEditingUsername;
+	Button* btnUsername;
+	int currentPage;
+	int maxPages;
 };
 
-#endif /*NET_MINECRAFT_CLIENT_GUI_SCREENS__OptionsScreen_H__*/
+#endif 

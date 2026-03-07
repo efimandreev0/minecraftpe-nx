@@ -8,6 +8,7 @@ public:
     
     static const char* Graphics_Fancy;
     static const char* Graphics_LowQuality;
+    static const char* Graphics_HighPerformance;
     
     static const char* Controls_Sensitivity;
     static const char* Controls_InvertMouse;
@@ -19,4 +20,4 @@ public:
 	static const char* Game_DifficultyLevel;
 };
 
-#endif /*NET_MINECRAFT_CLIENT__OptionsStrings_H__*/
+#endif 

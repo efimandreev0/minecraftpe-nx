@@ -7,3 +7,5 @@ handheld/project/win32/Debug/*
 *.sdf
 *.suo
 *.opensdf
+
+*.kate-swp

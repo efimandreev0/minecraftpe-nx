@@ -300,7 +300,6 @@ add_executable(minecraftcpp
   ${HANDHELD}/server/ServerLevel.cpp
   ${HANDHELD}/Performance.cpp
   ${HANDHELD}/client/Options.cpp
-  ${HANDHELD}/client/OptionStrings.cpp
   ${HANDHELD}/client/Minecraft.cpp
   ${HANDHELD}/client/model/PigModel.cpp
   ${HANDHELD}/client/model/ChickenModel.cpp
@@ -349,6 +348,7 @@ add_executable(minecraftcpp
   ${HANDHELD}/client/player/RemotePlayer.cpp
   ${HANDHELD}/client/player/LocalPlayer.cpp
   ${HANDHELD}/client/OptionsFile.cpp
+  ${HANDHELD}/client/OptionStrings.cpp
   ${HANDHELD}/client/sound/SoundEngine.cpp
   ${HANDHELD}/client/sound/Sound.cpp
   ${HANDHELD}/client/gamemode/CreativeMode.cpp
