@@ -301,20 +301,20 @@ void handleController() {
 	}
 
 	// psvita: placing and breaking blocks
-	if(changedButtons & SCE_CTRL_RTRIGGER) {
-		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER), 0,0);
+	if(changedButtons & SCE_CTRL_LTRIGGER) {
+		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER), 0,0);
 	}
 
-	if(changedButtons & SCE_CTRL_LTRIGGER) {
-		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_LTRIGGER), 0,0);
+	if(changedButtons & SCE_CTRL_RTRIGGER) {
+		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_RTRIGGER), 0,0);
 	}
 
 	// pstv: placing and breaking blocks
-	if(changedButtons & SCE_CTRL_R1) {
-		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_R1), 0,0);
-	}
 	if(changedButtons & SCE_CTRL_L1) {
-		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_L1), 0,0);
+		Mouse::feed(MouseAction::ACTION_RIGHT, BTN_STATE(ctrl.buttons, SCE_CTRL_L1), 0,0);
+	}
+	if(changedButtons & SCE_CTRL_R1) {
+		Mouse::feed(MouseAction::ACTION_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_R1), 0,0);
 	}
 
 }
