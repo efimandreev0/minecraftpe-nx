@@ -40,8 +40,8 @@ protected:
 
 
 #elif defined(__VITA__)
-	SceUID mutex;
-	SceUID cond;
+	SceKernelLwMutexWork mutex;
+	SceKernelLwCondWork cond;
 #else
 	SimpleMutex isSignaledMutex;
 	bool isSignaled;

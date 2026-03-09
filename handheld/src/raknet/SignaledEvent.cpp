@@ -39,8 +39,8 @@ void SignaledEvent::InitEvent(void)
 
 
 #elif defined(__VITA__)
-	mutex = sceKernelCreateMutex("SignaledEvent", 0, 0, NULL);
-	cond = sceKernelCreateCond("SignaledEvent", 0, mutex, NULL);
+	sceKernelCreateLwMutex(&mutex, "SignaledEvent", 0, 0, NULL);
+	sceKernelCreateLwCond(&cond, "SignaledEvent", 0, &mutex, NULL);
 #else
 
 #if !defined(ANDROID)
@@ -69,8 +69,8 @@ void SignaledEvent::CloseEvent(void)
 
 
 #elif defined(__VITA__)
-	sceKernelDeleteCond(cond);
-	sceKernelDeleteMutex(mutex);
+	sceKernelDeleteLwCond(&cond);
+	sceKernelDeleteLwMutex(&mutex);
 #else
 	pthread_cond_destroy(&eventList);
 	pthread_mutex_destroy(&hMutex);
@@ -94,7 +94,7 @@ void SignaledEvent::SetEvent(void)
 
 
 #elif defined(__VITA__)
-	sceKernelSignalCondAll(cond);
+	sceKernelSignalLwCondAll(&cond);
 #else
 	// Different from SetEvent which stays signaled.
 	// We have to record manually that the event was signaled
@@ -157,7 +157,7 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 
 #elif defined(__VITA__)
 	unsigned int timeoutµs = timeoutMs * 1000;
-	sceKernelWaitCond(cond, &timeoutµs);
+	sceKernelWaitLwCond(&cond, &timeoutµs);
 #else
 
 	// If was previously set signaled, just unset and return
