@@ -28,7 +28,7 @@
 		#define LOGE(...) ((void)__android_log_print( ANDROID_LOG_ERROR, "MinecraftPE", __VA_ARGS__ ))
 		#define printf LOGI
 	#endif
-#elif defined(__VITA__)
+#elif defined(__VITA__) && !defined(PUBLISH)
 	#define LOGV(...) (sceClibPrintf(__VA_ARGS__))
 	#define LOGI(...) (sceClibPrintf(__VA_ARGS__))
 	#define LOGW(...) (sceClibPrintf(__VA_ARGS__))

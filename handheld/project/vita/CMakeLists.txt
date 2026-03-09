@@ -28,16 +28,25 @@ set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/../../data")
 
 set(VITA_ICON0 ${CMAKE_CURRENT_LIST_DIR}/sce_sys/icon0.png)
 
+add_definitions(-D__VITA__)
+
 if(DEMO)
 set(VITA_APP_NAME "Minecraft PE Demo")
 set(VITA_TITLEID  "MCPEDEMO0")
 set(VITA_ICON0 ${CMAKE_CURRENT_LIST_DIR}/sce_sys/icon0_demo.png)
-add_definitions(-D__VITA__ -DDEMO_MODE)
-else()
-add_definitions(-D__VITA__)
+add_definitions(-DDEMO_MODE)
 endif()
 
-add_compile_options(-O3)
+add_compile_options(-O3 -ffast-math -fomit-frame-pointer)
+
+if(PUBLISH)
+add_definitions(-DPUBLISH)
+endif()
+#if(RELEASE)
+#add_definitions(-DRELEASE)
+#add_compile_options(-O3 -g0 -frtti -ffast-math -funroll-loops -fomit-frame-pointer)
+#endif()
+
 
 add_library(raknet
   ${HANDHELD}/raknet/DS_Table.cpp
@@ -440,6 +449,7 @@ target_link_libraries(minecraftcpp PUBLIC
   SceDisplay_stub
   SceAudio_stub
   SceNgsUser_stub
+  ScePower_stub
   SceNet_stub
   SceAppMgr_stub
   SceNetCtl_stub
