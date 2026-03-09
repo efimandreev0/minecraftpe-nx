@@ -56,7 +56,7 @@ private:
 #ifdef _WIN32
 	CRITICAL_SECTION criticalSection; /// Docs say this is faster than a mutex for single process access
 #elif defined(__VITA__)
-	SceUID mutex;
+	SceKernelLwMutexWork mutex;
 #else
 	pthread_mutex_t hMutex;
 #endif

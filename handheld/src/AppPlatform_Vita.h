@@ -79,12 +79,15 @@ public:
 
 	void buyGame() override {
 
-		// TODO: check np region
-		std::string region = "eu";
+		int lang = 0;
+		SceNpCountryCode code = { 0 };
+		sceNpManagerGetAccountRegion(&code, &lang);
+
+		std::string region = std::string(code.data, sizeof(code.data));
 
 		if (region == "jp") {
 			sceAppMgrLaunchAppByUri(0x60000, "psts:browse?product=JP0127-PCSG00302_00-MINECRAFTVIT0000");
-		} else if (region == "us") {
+		} else if (region == "us" || region == "ca") {
 			sceAppMgrLaunchAppByUri(0x60000, "psts:browse?product=UP4433-PCSE00491_00-MINECRAFTVIT0000");
 		} else {
 			sceAppMgrLaunchAppByUri(0x60000, "psts:browse?product=EP4433-PCSB00560_00-MINECRAFTVIT0000");

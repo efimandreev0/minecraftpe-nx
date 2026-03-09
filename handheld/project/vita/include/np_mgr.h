@@ -40,9 +40,17 @@ extern "C" {
 		unsigned char reserved[8];
 	} SceNpId;
 
+	typedef struct SceNpCountryCode {
+		char data[2];
+		char term;
+		char padding[1];
+	} SceNpCountryCode;
+
 	int sceNpInit(const SceNpCommunicationConfig *commConf, SceNpOptParam *opt);
 	void sceNpTerm();
 	int sceNpManagerGetNpId(SceNpId *npId);
+	int sceNpManagerGetAccountRegion(SceNpCountryCode *countryCode, int *languageCode);
+
 
 }
 #endif
