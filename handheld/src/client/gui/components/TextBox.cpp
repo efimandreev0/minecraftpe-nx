@@ -2,7 +2,7 @@
 #include "../../Minecraft.h"
 #include "../../../AppPlatform.h"
 #include "../../renderer/Textures.h"
-#include "../screen.h"
+#include "../Screen.h"
 
 #include "Button.h"
 
