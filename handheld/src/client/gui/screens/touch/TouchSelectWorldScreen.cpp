@@ -415,8 +415,8 @@ void SelectWorldScreen::tick()
 			std::string name = getUniqueLevelName("perf");
 			minecraft->setScreen(new SimpleChooseLevelScreen(name));
 		#elif defined(__VITA__)
-			minecraft->setScreen(new CreateWorldScreen());
-			return;
+			//minecraft->setScreen(new CreateWorldScreen());
+			//return;
 			minecraft->platform()->showKeyboard();
 			_state = _STATE_INPUTNAME;
 			bHeader.msg = "Choose World Name";

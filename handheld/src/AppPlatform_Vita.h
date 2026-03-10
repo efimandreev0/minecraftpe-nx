@@ -121,7 +121,6 @@ public:
 		static SceUInt32 ime_workram[SCE_IME_WORK_BUFFER_SIZE / sizeof(SceInt32)] = {0};
 	
 		SceImeParam param;
-		LOGI("sceParamInit\n");
 		sceImeParamInit(&param);
 
 		param.supportedLanguages = SCE_IME_LANGUAGE_ENGLISH_GB;
@@ -138,8 +137,7 @@ public:
 		param.arg = NULL;
 		param.work = ime_workram;
 
-		LOGI("sceImeOpen\n");
-		checkSce(sceImeOpen(&param));
+		sceImeOpen(&param);
 		ime_is_open = true;
 	}
 

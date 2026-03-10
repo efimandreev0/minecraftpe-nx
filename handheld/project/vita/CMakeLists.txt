@@ -177,7 +177,7 @@ target_compile_definitions(raknet PRIVATE
   _RAKNET_SUPPORT_TwoWayAuthentication=0
 )
 
-add_executable(minecraftcpp
+add_executable(${PROJECT_NAME}
   ${HANDHELD}/main.cpp
   ${HANDHELD}/SharedConstants.cpp
   ${HANDHELD}/nbt/Tag.cpp
@@ -433,15 +433,15 @@ add_executable(minecraftcpp
   ${HANDHELD}/locale/I18n.cpp
 )
 
-target_include_directories(minecraftcpp PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
-target_link_directories(minecraftcpp PRIVATE
+target_link_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/lib
 )
 
-target_link_libraries(minecraftcpp PUBLIC
+target_link_libraries(${PROJECT_NAME} PUBLIC
   IMGEGL_stub_weak
   gpu_es4_ext_stub
   GLESv1_CM_stub_weak
@@ -463,7 +463,7 @@ target_link_libraries(minecraftcpp PUBLIC
   z
 )
 
-vita_create_self(minecraftcpp.self minecraftcpp UNSAFE)
+vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME} UNSAFE)
 
 set(VPK_ARGS "")
 macro(add_assets GLOB)
@@ -490,7 +490,7 @@ add_assets(images/mob/*)
 add_assets(fonts/*)
 add_assets(lang/*)
 
-vita_create_vpk(minecraftcpp.vpk ${VITA_TITLEID} minecraftcpp.self
+vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
   VERSION ${VITA_VERSION}
   NAME ${VITA_APP_NAME}
   ${VPK_ARGS}

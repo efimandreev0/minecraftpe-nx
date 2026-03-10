@@ -17,15 +17,16 @@
 #include <psp2/net/netctl.h>
 #include <gpu_es4/psp2_pvr_hint.h>
 
-#define checkGl() assert(glGetError() == 0)
-#define checkSce(x) ret = x; sceClibPrintf(#x ": %08x\n", ret);
-
 #include "App.h"
 #include "AppPlatform_Vita.h"
+#include "platform/log.h"
 #include "platform/input/Mouse.h"
 #include "platform/input/Multitouch.h"
 #include "platform/input/Keyboard.h"
 #include "platform/input/Controller.h"
+
+#define checkGl() assert(glGetError() == 0)
+#define checkSce(x) ret = x; LOGI(#x ": %08x\n", ret);
 
 
 int _newlib_heap_size_user   = 64 * 1024 * 1024;
@@ -168,7 +169,7 @@ void handleTouch() {
 	prevTouchData = currTouchData;
 	ret = sceTouchRead(0, &currTouchData, 1);
 	if (ret < 0) {
-		sceClibPrintf("sceTouchRead: %08x\n", ret);
+		LOGI("sceTouchRead: %08x\n", ret);
 		return;
 	}
 
@@ -289,7 +290,7 @@ void handleController() {
 	}
 	// drop item
 	if(changedButtons & SCE_CTRL_CIRCLE) {
-		Keyboard::feed(Keyboard::KEY_Q, BTN_STATE(ctrl.buttons, SCE_CTRL_CIRCLE));
+		Keyboard::feed(Keyboard::KEY_ESCAPE, BTN_STATE(ctrl.buttons, SCE_CTRL_CIRCLE));
 	}
 	// inventory
 	if(changedButtons & SCE_CTRL_SQUARE) {
@@ -297,7 +298,7 @@ void handleController() {
 	}
 	// pause
 	if(changedButtons & SCE_CTRL_START) {
-		Keyboard::feed(Keyboard::KEY_ESCAPE, BTN_STATE(ctrl.buttons, SCE_CTRL_START));
+		Keyboard::feed(Keyboard::KEY_P, BTN_STATE(ctrl.buttons, SCE_CTRL_START));
 	}
 
 	// psvita: placing and breaking blocks

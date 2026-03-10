@@ -750,13 +750,13 @@ void Minecraft::tickInput() {
 						// open inventory
 						screenChooser.setScreen(SCREEN_BLOCKSELECTION);
 					}
-					if (key == Keyboard::KEY_ESCAPE) {
+					if (key == Keyboard::KEY_P) {
 						// pause the game
 						pauseGame(false);
 					}
 
 					// drop currently selected inventory slot.
-					if(key == Keyboard::KEY_Q) {
+					if(key == Keyboard::KEY_ESCAPE) {
 						if (!isCreativeMode() && player->inventory->getItem(player->inventory->selected) != nullptr) {
 							player->inventory->dropSlot(player->inventory->selected, false);
 						}

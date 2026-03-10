@@ -33,8 +33,7 @@
 	#define LOGI(...) (sceClibPrintf(__VA_ARGS__))
 	#define LOGW(...) (sceClibPrintf(__VA_ARGS__))
 	#define LOGE(...) (sceClibPrintf(__VA_ARGS__))
-#else
-#ifdef PUBLISH
+#elif defined(PUBLISH)
     #define LOGV(fmt, ...) __LOG_PUBLISH(__VA_ARGS__)
     #define LOGI(fmt, ...) __LOG_PUBLISH(__VA_ARGS__)
     #define LOGW(fmt, ...) __LOG_PUBLISH(__VA_ARGS__)
@@ -44,7 +43,6 @@
 	#define LOGI(...) (printf(__VA_ARGS__))
 	#define LOGW(...) (printf(__VA_ARGS__))
 	#define LOGE(...) (printf(__VA_ARGS__))
-#endif
 #endif
 
 #ifdef _DEBUG

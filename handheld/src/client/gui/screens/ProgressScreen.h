@@ -10,6 +10,9 @@ public:
 
 	void render(int xm, int ym, float a);
 	bool isInGameScreen();
+#ifdef __VITA__
+	void keyPressed(int eventKey);
+#endif
 
 	void tick();
 private:
