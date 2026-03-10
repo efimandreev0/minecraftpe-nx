@@ -47,6 +47,8 @@ void RenameMPLevelScreen::tick(){
 }
 
 void RenameMPLevelScreen::buttonClicked(Button* button) {
+	Screen::buttonClicked(button);
+
 	if(button == &bCancel) {
 		minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
 	}
@@ -98,7 +100,7 @@ void RenameMPLevelScreen::render(int xm, int ym, float a)
 		//renderDirtBackground(0);
 		glEnable2(GL_BLEND);
 
-		drawCenteredString(minecraft->font, "Enter a name to save this world as:", width/2, (bLevelName.y - bLevelName.height) + 10, 0xffcccccc);
+		drawCenteredString(minecraft->font, "Enter a name to save this world as:", width/2, bLevelName.y - 10, 0xffcccccc);
 
 		Screen::render(xm, ym, a);
 		glDisable2(GL_BLEND);

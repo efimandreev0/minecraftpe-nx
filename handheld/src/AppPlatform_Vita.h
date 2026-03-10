@@ -56,11 +56,12 @@ static void Utf16ToUtf8(const uint16_t *src, uint8_t *dst)
 static void ImeEventHandler(void *arg, const SceImeEventData *e)
 {
 
+
 	switch (e->id) {
 		case SCE_IME_EVENT_UPDATE_TEXT:
 			Utf16ToUtf8((SceWChar16 *)ime_out, (uint8_t*)ime_out_utf8);
 			LOGI("text_so_far: %s\n", ime_out_utf8);
-		break;
+			break;
 		case SCE_IME_EVENT_PRESS_ENTER:
 			sceImeClose();
 			ime_is_open = false;
@@ -97,7 +98,7 @@ public:
 		}
 	}
 
-	StringVector getUserInput() override {
+	/* StringVector getUserInput() override {
 		LOGI("getUserInput\n");
 		StringVector vec;
 		int ret;
@@ -114,7 +115,7 @@ public:
 		vec.push_back(imetxt);
 
 		return vec;
-	}
+	} */
 
 	void showKeyboard() override {
 		int ret;

@@ -282,7 +282,6 @@ SelectWorldScreen::SelectWorldScreen()
 	bCreate (2, "Create new"),
 	bBack   (3, "Back"),
 	bHeader (0, "Select world"),
-	bLevelName (1, "Level Name"),
 	bWorldView(4, ""),
 	worldsList(NULL),
 	_hasStartedLevel(false),
@@ -310,7 +309,6 @@ SelectWorldScreen::SelectWorldScreen()
 
 SelectWorldScreen::~SelectWorldScreen()
 {
-	minecraft->platform()->hideKeyboard();
 	delete worldsList;
 }
 
@@ -324,7 +322,6 @@ void SelectWorldScreen::init()
 	buttons.push_back(&bCreate);
 	buttons.push_back(&bBack);
 	buttons.push_back(&bHeader);
-	buttons.push_back(&bLevelName);
 
 	_mouseHasBeenUp = !Mouse::getButtonState(MouseAction::ACTION_LEFT);
 
@@ -348,19 +345,15 @@ void SelectWorldScreen::setupPositions() {
 	bHeader.x   = bBack.width;
 	bHeader.width   = width - (bBack.width + bCreate.width);
 	bHeader.height   = bCreate.height;
-
-	bLevelName.x = 0;
-	bLevelName.y = bHeader.height;
-	bLevelName.width = width;
-	bLevelName.height = bHeader.height;
-	bLevelName.visible = false;
 }
 
 void SelectWorldScreen::buttonClicked(Button* button)
 {
 	if (button->id == bCreate.id) {
 		if (_state == _STATE_DEFAULT && !_hasStartedLevel) {
+#ifndef __VITA__
 			minecraft->platform()->createUserInput(DialogDefinitions::DIALOG_CREATE_NEW_WORLD);
+#endif
 			_state = _STATE_CREATEWORLD;
 		}
 	}
@@ -415,12 +408,7 @@ void SelectWorldScreen::tick()
 			std::string name = getUniqueLevelName("perf");
 			minecraft->setScreen(new SimpleChooseLevelScreen(name));
 		#elif defined(__VITA__)
-			//minecraft->setScreen(new CreateWorldScreen());
-			//return;
-			minecraft->platform()->showKeyboard();
-			_state = _STATE_INPUTNAME;
-			bHeader.msg = "Choose World Name";
-			bLevelName.visible = true;
+			minecraft->setScreen(new CreateWorldScreen());
 			return;
 		#else
 			int status = minecraft->platform()->getUserInputStatus();
@@ -478,15 +466,6 @@ void SelectWorldScreen::tick()
 
 		worldsList->hasPickedLevel = false;
 		return;
-	}
-
-	if(_state == _STATE_INPUTNAME) {
-		std::string input = minecraft->platform()->getKeyboardInput();
-		bLevelName.msg = input;
-		if(!minecraft->platform()->isKeyboardVisible()) {
-			std::string name = getUniqueLevelName(input);
-			minecraft->setScreen(new SimpleChooseLevelScreen(name));
-		}
 	}
 
 	worldsList->tick();

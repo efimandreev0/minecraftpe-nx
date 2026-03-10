@@ -23,7 +23,11 @@ public:
 
     void render(Minecraft* minecraft, int xm, int ym) override;
 	void setPressed(Minecraft* minecraft) override;
-	
+	void renderBg(Minecraft* minecraft, int xm, int ym ) override;
+
+private:
+	std::string defaultText;
+	Minecraft* minecraftRef = nullptr;
 public:
 	std::string text;
 	bool focused;

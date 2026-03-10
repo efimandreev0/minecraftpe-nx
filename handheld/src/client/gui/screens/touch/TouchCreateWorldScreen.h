@@ -10,10 +10,12 @@
 #include "../../../Minecraft.h"
 #include "../../../../world/level/storage/LevelStorageSource.h"
 #include "../../../../world/level/LevelSettings.h"
+#include "../ChooseLevelScreen.h"
+
 
 namespace Touch {
 
-class CreateWorldScreen: public Screen
+class CreateWorldScreen: public ChooseLevelScreen
 {
 public:
 	CreateWorldScreen();
@@ -22,24 +24,22 @@ public:
 	void init() override;
 	void setupPositions() override;
 
+	void tick() override;
 	void render(int xm, int ym, float a) override;
 
 	void buttonClicked(Button* button) override;
 	bool handleBackEvent(bool isDown) override;
 
 private:
-	void loadLevelSource();
-	std::string getUniqueLevelName(const std::string& level);
 
 	THeader bHeader;
 	TButton bBack;
 	TButton bStart;
 	TextBox bLevelName;
+	TButton bGameMode;
 	TextBox bSeed;
-	TButton bCreative;
-	TButton bSurvival;
 
-	int gameType;
+	int gameType = GameType::Creative;
 };
 };
 
