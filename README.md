@@ -10,3 +10,13 @@ make -j$(nproc)
 
 If you want to build the demo; you can add the ``-DDEMO=on`` flag to the cmake line.
 
+
+Credits:
+
+# Development work:
+   - Olebeck (graphics, sound, networking)
+   - Li (controls, refining options, menuing)
+   - Koutsie (original options menu concept)
+   
+	PVR_PSP2 maintainers.
+	The Vita Scene
