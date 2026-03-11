@@ -414,6 +414,9 @@ void Gui::onConfigChanged( const Config& c ) {
 	} else {
 		_numSlots = Inventory::MAX_SELECTION_SIZE; // Xperia Play
 	}
+#if defined(__VITA__)
+	_numSlots = Inventory::MAX_SELECTION_SIZE;
+#endif
 	MAX_MESSAGE_WIDTH = c.guiWidth;
 }
 
