@@ -11,6 +11,9 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
+option(DEMO "build demo version" OFF)
+option(PUBLISH "build release version" OFF)
+
 project(minecraftcpp)
 
 include("${VITASDK}/share/vita.cmake" REQUIRED)

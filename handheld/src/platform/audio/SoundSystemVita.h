@@ -25,16 +25,9 @@ private:
     static const int NUM_MODULES = 14;
     static const int OUTPUT_BUF_SIZE = SYS_GRANULARITY * 2 * sizeof(short);
 
-    struct Buffer {
-        bool         inited   = false;
-        const void*  framePtr = nullptr;
-        int          size     = 0;
-        int          channels = 0;
-        int          frameRate = 0;
-        int          byteWidth = 0;
-    };
-
     bool available;
+
+    Vec3 _position;
     float _rotation;
 
     SceNgsHSynSystem _ngsSys;
