@@ -128,8 +128,6 @@ void OptionsScreen::removed()
 
 void OptionsScreen::buttonClicked( Button* button ) {
 	if(button == btnClose) {
-		minecraft->options.save();
-
 		minecraft->reloadOptions();
 		minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
 	} else if (button == btnPrevPage) {

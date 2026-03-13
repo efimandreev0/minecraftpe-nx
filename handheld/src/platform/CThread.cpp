@@ -56,7 +56,7 @@ static int vita_thread_entry(size_t argc, void* argv) {
 		);
 	#endif
 	#ifdef __VITA__
-		m_thread = sceKernelCreateThread("CThread", vita_thread_entry, 0x10000100, 0x4000, 0, 0, NULL);
+		m_thread = sceKernelCreateThread("CThread", vita_thread_entry, 0x10000100, 2 * 1024 * 1024, 0, 0, NULL);
 		void* args[2] = {
 			(void*)threadFunc,
 			threadParam

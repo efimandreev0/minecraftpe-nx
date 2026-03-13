@@ -11,6 +11,9 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
+option(DEMO "build demo version" OFF)
+option(PUBLISH "build release version" OFF)
+
 project(minecraftcpp)
 
 include("${VITASDK}/share/vita.cmake" REQUIRED)
@@ -42,7 +45,7 @@ set(VITA_GATE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/livearea/contents/gate_demo.png)
 add_definitions(-DDEMO_MODE)
 endif()
 
-add_compile_options(-O3 -ffast-math -fomit-frame-pointer)
+add_compile_options(-O3)
 
 if(PUBLISH)
 add_definitions(-DPUBLISH)
@@ -407,11 +410,11 @@ add_executable(${PROJECT_NAME}
   ${HANDHELD}/client/gui/screens/touch/TouchJoinGameScreen.cpp
   ${HANDHELD}/client/gui/screens/touch/TouchSelectWorldScreen.cpp
   ${HANDHELD}/client/gui/screens/touch/TouchStartMenuScreen.cpp
-  ${HANDHELD}/client/gui/screens/touch/TouchCreateWorldScreen.cpp
   ${HANDHELD}/client/gui/screens/touch/TouchIngameBlockSelectionScreen.cpp
   ${HANDHELD}/client/gui/screens/UploadPhotoScreen.cpp
   ${HANDHELD}/client/gui/screens/ArmorScreen.cpp
   ${HANDHELD}/client/gui/screens/SimpleChooseLevelScreen.cpp
+  ${HANDHELD}/client/gui/screens/AdvancedChooseLevelScreen.cpp
   ${HANDHELD}/client/gui/screens/ChestScreen.cpp
   ${HANDHELD}/client/gui/screens/ConfirmScreen.cpp
   ${HANDHELD}/client/gui/screens/TextEditScreen.cpp

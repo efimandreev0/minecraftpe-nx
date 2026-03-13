@@ -1,16 +1,12 @@
-#include "TouchCreateWorldScreen.h"
-#include "../ProgressScreen.h"
-#include "../../../Minecraft.h"
-
-namespace Touch {
-
-
+#include "ProgressScreen.h"
+#include "../../Minecraft.h"
+#include "AdvancedChooseLevelScreen.h"
 
 static char ILLEGAL_FILE_CHARACTERS[] = {
     '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'
 };
 
-CreateWorldScreen::CreateWorldScreen()
+AdvancedChooseLevelScreen::AdvancedChooseLevelScreen()
 :   bHeader(0, "World name"),
     bBack(1, "Back"),
     bStart(2, "Start!"),
@@ -20,11 +16,13 @@ CreateWorldScreen::CreateWorldScreen()
 {
 }
 
-CreateWorldScreen::~CreateWorldScreen()
+AdvancedChooseLevelScreen::~AdvancedChooseLevelScreen()
 {
 }
 
-void CreateWorldScreen::init() {
+void AdvancedChooseLevelScreen::init() {
+    ChooseLevelScreen::init();
+
     buttons.push_back(&bHeader);
     buttons.push_back(&bBack);
     buttons.push_back(&bStart);
@@ -33,7 +31,7 @@ void CreateWorldScreen::init() {
     buttons.push_back(&bSeed);
 }
 
-void CreateWorldScreen::setupPositions() {
+void AdvancedChooseLevelScreen::setupPositions() {
 
     int padding = 30;
 
@@ -61,11 +59,11 @@ void CreateWorldScreen::setupPositions() {
     bSeed.y = (height - 50);
 }
 
-void CreateWorldScreen::tick() {
+void AdvancedChooseLevelScreen::tick() {
     bGameMode.msg = (this->gameType == GameType::Creative) ? "Creative" : "Survival";
 }
 
-void CreateWorldScreen::render( int xm, int ym, float a )
+void AdvancedChooseLevelScreen::render( int xm, int ym, float a )
 {
     renderDirtBackground(0);
     glEnable2(GL_BLEND);
@@ -78,7 +76,7 @@ void CreateWorldScreen::render( int xm, int ym, float a )
     glDisable2(GL_BLEND);
 }
 
-void CreateWorldScreen::buttonClicked(Button* button) {
+void AdvancedChooseLevelScreen::buttonClicked(Button* button) {
     if(button == &bBack) {
         minecraft->screenChooser.setScreen(SCREEN_SELECTWORLD);
         return;
@@ -137,10 +135,9 @@ void CreateWorldScreen::buttonClicked(Button* button) {
     }
 }
 
-bool CreateWorldScreen::handleBackEvent(bool isDown)
+bool AdvancedChooseLevelScreen::handleBackEvent(bool isDown)
 {
     minecraft->screenChooser.setScreen(SCREEN_SELECTWORLD);
     return true;
 }
 
-};

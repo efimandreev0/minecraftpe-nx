@@ -170,7 +170,11 @@ void SoundEngine::destroy()
 void SoundEngine::update( Mob* player, float a )
 {
 	if (/*!loaded || */options->sound == 0) return;
-	if (player == NULL) return;
+	if (player == NULL) {
+		soundSystem.setListenerAngle(0.0f);
+		soundSystem.setListenerPos(0.0f, 0.0f, 0.0f);
+		return;
+	};
 
 	_x = player->xo + (player->x - player->xo) * a;
 	_y = player->yo + (player->y - player->yo) * a;
@@ -178,7 +182,7 @@ void SoundEngine::update( Mob* player, float a )
 	_yRot = player->yRotO + (player->yRot - player->yRotO) * a;
 
 	soundSystem.setListenerAngle(_yRot);
-	//soundSystem.setListenerPos(_x, _y, _z); //@note: not used, since we translate all sounds to Player space
+	soundSystem.setListenerPos(_x, _y, _z);
 }
 
 float SoundEngine::_getVolumeMult( float x, float y, float z )

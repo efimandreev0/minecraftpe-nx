@@ -4,7 +4,7 @@ NetherReactorPattern::NetherReactorPattern( ) {
 	const int goldId = Tile::goldBlock->id;
 	const int stoneId = Tile::stoneBrick->id;
 	const int netherCoreId = Tile::netherReactor->id;
-	const unsigned int types[3][3][3] =
+	const int types[3][3][3] =
 	{
 		// Level 0
 		{

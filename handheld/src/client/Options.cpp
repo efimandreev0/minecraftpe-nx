@@ -222,6 +222,20 @@ void Options::update() {
 		const std::string& key = optionStrings[i];
 		const std::string& value = optionStrings[i+1];
 
+		// new settings :
+		if (key == OptionStrings::Controls_UseTouchScreen) readBool(value, useTouchScreen);
+		if (key == OptionStrings::Graphics_Debug) readBool(value, renderDebug);
+		if (key == OptionStrings::Graphics_RenderDistance) readInt(value, viewDistance);
+		if (key == OptionStrings::Audio_Music) readFloat(value, music);
+		if (key == OptionStrings::Audio_Sound) readFloat(value, sound);
+		if (key == OptionStrings::Game_HideGui) readBool(value, hideGui);
+		if (key == OptionStrings::Game_ThirdPersonView) readBool(value, thirdPersonView);
+		if (key == OptionStrings::Graphics_AmbientOcclusion) readBool(value, ambientOcclusion);
+		if (key == OptionStrings::Game_ViewBobbing) readBool(value, bobView);
+		if (key == OptionStrings::Graphics_Anaglyph3d) readBool(value, anaglyph3d);
+		if (key == OptionStrings::Graphics_LimitFramerate) readBool(value, limitFramerate);
+
+
 		//LOGI("reading key: %s (%s)\n", key.c_str(), value.c_str());
 
 		// Multiplayer
@@ -267,19 +281,6 @@ void Options::update() {
 			if (difficulty != Difficulty::PEACEFUL && difficulty != Difficulty::NORMAL)
 				difficulty = Difficulty::NORMAL;
 		}
-
-		// new settings :
-
-		if (key == OptionStrings::Graphics_Debug) readBool(value, renderDebug);
-		if (key == OptionStrings::Graphics_RenderDistance) readInt(value, viewDistance);
-		if (key == OptionStrings::Audio_Music) readFloat(value, music);
-		if (key == OptionStrings::Audio_Sound) readFloat(value, sound);
-		if (key == OptionStrings::Game_HideGui) readBool(value, hideGui);
-		if (key == OptionStrings::Game_ThirdPersonView) readBool(value, thirdPersonView);
-		if (key == OptionStrings::Graphics_AmbientOcclusion) readBool(value, ambientOcclusion);
-		if (key == OptionStrings::Game_ViewBobbing) readBool(value, bobView);
-		if (key == OptionStrings::Graphics_Anaglyph3d) readBool(value, anaglyph3d);
-		if (key == OptionStrings::Graphics_LimitFramerate) readBool(value, limitFramerate);
 	}
 }
 

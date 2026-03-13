@@ -14,6 +14,7 @@
 #include <set>
 #include "../../renderer/Textures.h"
 #include "SimpleChooseLevelScreen.h"
+#include "AdvancedChooseLevelScreen.h"
 
 static float Max(float a, float b) {
 	return a>b? a : b;
@@ -252,7 +253,9 @@ void SelectWorldScreen::buttonClicked(Button* button)
 		//minecraft->setScreen(new ProgressScreen());
 
 		if (_state == _STATE_DEFAULT && !_hasStartedLevel) {
+#if defined(__ANDROID__) || defined(__APPLE__)
 			minecraft->platform()->createUserInput(DialogDefinitions::DIALOG_CREATE_NEW_WORLD);
+#endif
 			_state = _STATE_CREATEWORLD;
 		}
 	}
@@ -302,9 +305,12 @@ void SelectWorldScreen::tick()
 			minecraft->hostMultiplayer();
 			minecraft->setScreen(new ProgressScreen());
 			_hasStartedLevel = true;
-		#elif defined(WIN32)
+		#elif defined(_WIN32) && 0 // honestly our custom choose level scren is probably better than whatever win32 does
 			std::string name = getUniqueLevelName("perf");
 			minecraft->setScreen(new SimpleChooseLevelScreen(name));
+		#elif !defined(__ANDROID__) || !defined(__APPLE__)
+			minecraft->setScreen(new AdvancedChooseLevelScreen());
+			return;
 		#else
 			int status = minecraft->platform()->getUserInputStatus();
 			if (status > -1) {

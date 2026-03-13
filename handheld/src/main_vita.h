@@ -35,6 +35,7 @@ unsigned int sceLibcHeapSize = 3 * 1024 * 1024;
 static bool _inited_egl = false;
 static bool _app_inited = false;
 
+static bool sneaking = false;
 
 static void initPvrPSP2() {
 	const char* libgpu_es4_ext =	"app0:module/libgpu_es4_ext.suprx";
@@ -258,10 +259,17 @@ void handleController() {
 	uint32_t changedButtons = ctrl.buttons ^ prevCtrl.buttons;
 	prevCtrl = ctrl;
 	if(changedButtons) {
-		//sceClibPrintf("changedButtons = %08x\n", changedButtons);
+		LOGI("changedButtons = %08x\n", changedButtons);
 	}
 
-	// f5
+	// sneak
+	if(changedButtons & SCE_CTRL_DOWN && BTN_STATE(ctrl.buttons, SCE_CTRL_DOWN)) {
+		sneaking = !sneaking;
+		Keyboard::feed(Keyboard::KEY_LSHIFT, sneaking);
+	}
+
+
+	// f5 (very good idea key)
 	if(changedButtons & SCE_CTRL_UP) {
 		Keyboard::feed(Keyboard::KEY_F5, BTN_STATE(ctrl.buttons, SCE_CTRL_UP));
 	}
@@ -273,12 +281,6 @@ void handleController() {
 	if(changedButtons & SCE_CTRL_LEFT) {
 		Keyboard::feed(Keyboard::KEY_LEFT, BTN_STATE(ctrl.buttons, SCE_CTRL_LEFT));
 	}
-
-	// sneak
-	if(changedButtons & SCE_CTRL_DOWN) {
-		Keyboard::feed(Keyboard::KEY_LSHIFT, BTN_STATE(ctrl.buttons, SCE_CTRL_DOWN));
-	}
-
 	// jump
 	if(changedButtons & SCE_CTRL_CROSS) {
 		Keyboard::feed(Keyboard::KEY_SPACE, BTN_STATE(ctrl.buttons, SCE_CTRL_CROSS));

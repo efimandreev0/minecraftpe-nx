@@ -72,6 +72,8 @@ public:
 	void onConfigChanged(const Config& c) override {
 		UnifiedTurnBuild::onConfigChanged(c);
 	}
+
+
 private:
 
 	int totalMineTicks = 0;

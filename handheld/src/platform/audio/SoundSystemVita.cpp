@@ -17,6 +17,29 @@ static void checkNgs(SceInt32 rc, const char* tag) {
         LOGI("### NGS error [%s]: 0x%08X\n", tag, rc);
 }
 
+static void calculateVolume(Vec3 listener_pos, float listener_rot, Vec3 sound_pos, float volume, float* vol_l, float* vol_r) {
+    Vec3 dist_v = sound_pos - listener_pos;
+    float dist = std::sqrt(dist_v.x*dist_v.x + dist_v.y*dist_v.y + dist_v.z*dist_v.z);
+
+    // get listener facing vector rotated by 90 degrees
+    float rad = (listener_rot + 90.0f) * Mth::DEGRAD;
+    float lx = -Mth::sin(rad);
+    float lz = Mth::cos(rad);
+
+    // normalized vector pointing to sound
+    float nx = (dist > 0.001f) ? dist_v.x / dist : 0.0f;
+    float nz = (dist > 0.001f) ? dist_v.z / dist : 0.0f;
+    
+    // pan = dot(r, n) -1 to 1
+    float pan = nx * lx + nz * lz;
+    // pan = how much to the right the sound is
+    // 1.0 = all the way right, -1.0 = all the way left
+    float normalizedPan = (pan + 1.0f) * 0.5f; // 0 to 1
+
+    *vol_l = volume * std::sqrt(1.0f - normalizedPan);
+    *vol_r = volume * std::sqrt(normalizedPan);
+}
+
 int SoundSystemVita::createRack(const SceNgsRackDescription* rackDesc, SceNgsHRack *pRackHandle) {
     SceNgsBufferInfo bufferInfo;
     int ret = sceNgsRackGetRequiredMemorySize(_ngsSys, rackDesc, &bufferInfo.size);
@@ -178,7 +201,9 @@ void SoundSystemVita::enable(bool status) {
     }
 }
 
-void SoundSystemVita::setListenerPos(float x, float y, float z) {}
+void SoundSystemVita::setListenerPos(float x, float y, float z) {
+    _position = Vec3(x, y, z);
+}
 
 void SoundSystemVita::setListenerAngle(float deg) {
     _rotation = deg;
@@ -233,12 +258,19 @@ void SoundSystemVita::playAt(const SoundDesc& sound,
     }
     sceNgsVoiceKill(voice);
 
+    float volume_l = volume;
+    float volume_r = volume;
+    if(x != 0 || y != 0 || z != 0) { // dont make menu sounds directional
+        Vec3 sound_pos = Vec3(x, y, z);
+        calculateVolume(_position, _rotation, sound_pos, volume, &volume_l, &volume_r);
+    }
+
     LOGI("playAt x=%.2f y=%.2f z=%.2f volume=%.2f\n", x, y, z, volume);
     SceNgsVolumeMatrix vols;
-    vols.m[0][0] = volume; // left to left
+    vols.m[0][0] = volume_l; // left to left
     vols.m[0][1] = 0.0f;   // left to right
     vols.m[1][0] = 0.0f;   // right to left
-    vols.m[1][1] = volume; // right to right
+    vols.m[1][1] = volume_r; // right to right
 
     initPlayer(voice, sound, pitch);    
     sceNgsVoicePatchSetVolumesMatrix(patch, &vols);

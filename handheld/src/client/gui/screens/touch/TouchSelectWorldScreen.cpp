@@ -12,10 +12,11 @@
 #include "../../../../platform/input/Mouse.h"
 #include "../../../../Performance.h"
 
+#include "../SimpleChooseLevelScreen.h"
+#include "../AdvancedChooseLevelScreen.h"
+
 #include <algorithm>
 #include <set>
-#include "../SimpleChooseLevelScreen.h"
-#include "TouchCreateWorldScreen.h"
 
 namespace Touch {
 
@@ -351,7 +352,7 @@ void SelectWorldScreen::buttonClicked(Button* button)
 {
 	if (button->id == bCreate.id) {
 		if (_state == _STATE_DEFAULT && !_hasStartedLevel) {
-#if !defined(__VITA__) && !defined(__SWITCH__)
+#if defined(__ANDROID__) || defined(__APPLE__)
 			minecraft->platform()->createUserInput(DialogDefinitions::DIALOG_CREATE_NEW_WORLD);
 #endif
 			_state = _STATE_CREATEWORLD;
@@ -404,11 +405,11 @@ void SelectWorldScreen::tick()
 			minecraft->hostMultiplayer();
 			minecraft->setScreen(new ProgressScreen());
 			_hasStartedLevel = true;
-		#elif defined(_WIN32)
+		#elif defined(_WIN32) && 0 // honestly our custom choose level scren is probably better than whatever win32 does
 			std::string name = getUniqueLevelName("perf");
 			minecraft->setScreen(new SimpleChooseLevelScreen(name));
-		#elif defined(__VITA__) || defined(__SWITCH__)
-			minecraft->setScreen(new CreateWorldScreen());
+		#elif !defined(__ANDROID__) || !defined(__APPLE__)
+			minecraft->setScreen(new AdvancedChooseLevelScreen());
 			return;
 		#else
 			int status = minecraft->platform()->getUserInputStatus();

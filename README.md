@@ -13,7 +13,7 @@ If you want to build the demo; you can add the ``-DDEMO=on`` flag to the cmake l
 # Credits
    - Olebeck (graphics, sound, networking)
    - Li (controls, refining options, menuing)
-   - Koutsie (original options menu concept)
+   - Koutsie (original options menu)
    - PVR_PSP2 developers (GrapheneCt) 
    - Silica (PSV-Port)
    - efimandreev0 (NX-Port)

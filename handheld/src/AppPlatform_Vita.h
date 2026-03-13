@@ -99,25 +99,6 @@ public:
 		}
 	}
 
-	/* StringVector getUserInput() override {
-		LOGI("getUserInput\n");
-		StringVector vec;
-		int ret;
-
-		showKeyboard();
-
-		while(!sceImeUpdate()) {}
-
-		Utf16ToUtf8(ime_out, ime_out_utf8);
-
-		std::string imetxt = std::string((char*)ime_out_utf8);
-		LOGI("imetxt: %s\n", imetxt.c_str());
-
-		vec.push_back(imetxt);
-
-		return vec;
-	} */
-
 	void showKeyboard() override {
 		int ret;
 		static SceUInt32 ime_workram[SCE_IME_WORK_BUFFER_SIZE / sizeof(SceInt32)] = {0};
