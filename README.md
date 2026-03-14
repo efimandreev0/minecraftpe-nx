@@ -10,6 +10,9 @@ make -j$(nproc)
 
 If you want to build the demo; you can add the ``-DDEMO=on`` flag to the cmake line.
 
+# GamePlay
+[![NX-GamePlay](https://img.youtube.com/vi/tUwJesK0Fgc/0.jpg)](https://www.youtube.com/watch?v=tUwJesK0Fgc)
+[![PSV-GamePlay](https://img.youtube.com/vi/88zhe_yYPjo/0.jpg)](https://www.youtube.com/watch?v=88zhe_yYPjo)
 # Credits
    - Olebeck (graphics, sound, networking)
    - Li (controls, refining options, menuing)
