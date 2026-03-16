@@ -38,7 +38,7 @@ struct CMcpeContainer : CCoeControl {
 
 	~CMcpeContainer() override;
 
-	bool PromptTextL(std::string &out);
+	bool PromptTextL(std::string &out, TInt maxLength = 0);
 
 	bool IsImeShown() const { return iImeShown; }
 

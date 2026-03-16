@@ -30,7 +30,7 @@ struct AppPlatform_Symbian : AppPlatform {
 	int getScreenWidth() override;
 	int getScreenHeight() override;
 
-	void showKeyboard() override;
+	void showKeyboard(std::string defaultText, int maxLength) override;
 	void hideKeyboard() override {}
 
 	bool isKeyboardVisible() override;

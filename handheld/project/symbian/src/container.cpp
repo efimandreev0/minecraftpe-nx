@@ -155,22 +155,35 @@ void CMcpeContainer::ConstructL(const TRect &aRect, CAknAppUi *aAppUi) {
 	iWsEventReceiver = CWsEventReceiver::NewL(*this, &CCoeEnv::Static()->WsSession());
 }
 
-bool CMcpeContainer::PromptTextL(std::string &out) {
+bool CMcpeContainer::PromptTextL(std::string &out, TInt maxLength) {
 	if (iImeShown) { return false; }
 
 	TBuf<128> data;
-	data.FillZ();
+
+	TPtrC8 strPtr(reinterpret_cast<const TUint8 *>(out.c_str()));
+	auto bufIn = EscapeUtils::ConvertToUnicodeFromUtf8L(strPtr);
+	CleanupStack::PushL(bufIn);
+
+	data.Copy(*bufIn);
+
+	CleanupStack::PopAndDestroy();
 
 	auto dlg = CAknTextQueryDialog::NewL(data);
 	dlg->SetPromptL(_L("Enter text"));
+	if (maxLength > 0) { dlg->SetMaxLength(maxLength); }
 
 	iImeShown = true;
 	bool ok = dlg->ExecuteLD(R_MCPE_TEXT_QUERY);
 	if (ok) {
 		auto mbcsTxt = EscapeUtils::ConvertFromUnicodeToUtf8L(data);
+		CleanupStack::PushL(mbcsTxt);
+
 		out = std::string(reinterpret_cast<const char *>(mbcsTxt->Ptr()), mbcsTxt->Length());
+
+		CleanupStack::PopAndDestroy();
 	}
 	iImeShown = false;
+
 	return ok;
 }
 
