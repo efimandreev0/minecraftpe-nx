@@ -1137,6 +1137,7 @@ bool Minecraft::isOnline()
 	return netCallback != NULL;
 }
 
+#if defined(__EPOC32__) && !defined(NO_NETWORK)
 bool Minecraft::needsClaimNetIf() {
 	if (isLookingForMultiplayer
 			|| isOnlineClient()
@@ -1147,6 +1148,7 @@ bool Minecraft::needsClaimNetIf() {
 	if (serv) { return serv->allowsIncomingConnections(); }
 	return false;
 }
+#endif
 
 void Minecraft::pauseGame(bool isBackPaused) {
 #ifndef STANDALONE_SERVER
