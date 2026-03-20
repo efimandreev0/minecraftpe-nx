@@ -105,8 +105,8 @@ public:
 
 
 	void tick(Player* player) override {
-		xa = -Controller::getTransformedX(moveStick, 0.1f, 1.25f, true);
-		ya = -Controller::getTransformedY(moveStick, 0.1f, 1.25f, true);
+		xa = -Controller::getTransformedX(moveStick, 0.15f, 1.25f, true);
+		ya = -Controller::getTransformedY(moveStick, 0.15f, 1.25f, true);
 
 		jumping = keys[KEY_JUMP];
 
