@@ -285,17 +285,17 @@ void handleController() {
 		Keyboard::feed(Keyboard::KEY_SPACE, BTN_STATE(ctrl.buttons, SCE_CTRL_CROSS));
 	}
 
-	// crafting menu
+	// inventory menu
 	if(changedButtons & SCE_CTRL_TRIANGLE) {
-		Keyboard::feed(Keyboard::KEY_C, BTN_STATE(ctrl.buttons, SCE_CTRL_TRIANGLE));
+		Keyboard::feed(Keyboard::KEY_E, BTN_STATE(ctrl.buttons, SCE_CTRL_TRIANGLE));
 	}
 	// drop item
 	if(changedButtons & SCE_CTRL_CIRCLE) {
 		Keyboard::feed(Keyboard::KEY_ESCAPE, BTN_STATE(ctrl.buttons, SCE_CTRL_CIRCLE));
 	}
-	// inventory
+	// crafting menu
 	if(changedButtons & SCE_CTRL_SQUARE) {
-		Keyboard::feed(Keyboard::KEY_E, BTN_STATE(ctrl.buttons, SCE_CTRL_SQUARE));
+		Keyboard::feed(Keyboard::KEY_C, BTN_STATE(ctrl.buttons, SCE_CTRL_SQUARE));
 	}
 	// pause
 	if(changedButtons & SCE_CTRL_START) {
