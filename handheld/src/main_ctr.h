@@ -14,10 +14,7 @@
 
 #if defined(__3DS__)
 #include <3ds.h>
-#define RIP_BACKEND_KYGX 0x01
-#include <GLASS.h>
-#include <GLES/gl.h>
-#include <GLES/gl2.h>
+#include "client/renderer/gles.h"
 #endif
 
 #include <sys/stat.h>
@@ -58,33 +55,13 @@ void networkExit() {
         soc_sharedmem = NULL;
     }
 }
-static GLASSCtx g_glassCtx = NULL;
-static GLuint g_mainFB = 0;
-static GLuint g_colorRB = 0;
-static GLuint g_depthRB = 0;
 static void initGraphics(App* app, AppContext* state)
 {
     osSetSpeedupEnable(true);
 
     gfxInitDefault();
-    kygxInit();
-
-    g_glassCtx = glassCreateDefaultContext(GLASS_VERSION_ES_1_1);
-    glassBindContext(g_glassCtx);
-
-    glGenFramebuffers(1, &g_mainFB);
-    glGenRenderbuffers(1, &g_colorRB);
-    glGenRenderbuffers(1, &g_depthRB);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, g_mainFB);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, g_colorRB);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, 400, 240);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, g_colorRB);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, g_depthRB);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, 400, 240);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, g_depthRB);
+    ctrglPlatformInit();
+    glInit();
 
     if (!_app_inited) {
         _app_inited = true;
@@ -96,8 +73,7 @@ static void initGraphics(App* app, AppContext* state)
     app->setSize(400, 240);
 }
 static void deinitGraphics() {
-    glassDestroyContext(g_glassCtx);
-    kygxExit();
+    ctrglPlatformExit();
     gfxExit();
 }
 void handleTouch() {
@@ -211,12 +187,9 @@ int main(int argc, char** argv) {
         handleTouch();
         handleController();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, g_mainFB);
-        glassSetTargetSide(g_glassCtx, GLASS_SIDE_LEFT);
-
+        ctrglBeginFrame();
         app->update();
-
-        glassSwapBuffers();
+        ctrglEndFrame();
     }
 
     deinitGraphics();

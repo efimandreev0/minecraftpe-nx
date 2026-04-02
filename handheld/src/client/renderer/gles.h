@@ -14,7 +14,6 @@
         #import <OpenGLES/ES1/gl.height>
         #import <OpenGLES/ES1/glext.height>
 	#elif defined(__3DS__)
-        #include <GLES/gl.h>
         #include "glctr.h"
 	#elif defined(__NDS__)
 		#include <nds/arm9/videoGL.h>
