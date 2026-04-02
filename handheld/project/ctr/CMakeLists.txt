@@ -390,9 +390,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   #GLESv1
   #GL
   #picaGL
-  GLASS
   kazmath
-  kygx
   rip
   ctru_old
   citro3d

@@ -48,6 +48,9 @@ void glInit()
 	GLenum err = glewInit();
 	printf("Err: %d\n", err);
 #endif
+#if defined(__3DS__)
+	ctrglInit();
+#endif
 }
 
 void anGenBuffers(GLsizei n, GLuint* buffers) {

@@ -14,7 +14,7 @@
         #import <OpenGLES/ES1/gl.height>
         #import <OpenGLES/ES1/glext.height>
 	#elif defined(__3DS__)
-        #include <GLES/gl.h>
+        #include "glctr.h"
 	#elif defined(__NDS__)
 		#include <nds/arm9/videoGL.h>
     #else
@@ -159,6 +159,25 @@ int glhUnProjectf(	float winx, float winy, float winz,
 	#define glBlendFunc2	glBlendFunc
 	#define glShadeModel2	glShadeModel
 #endif
+
+
+#if defined(__3DS__)
+	#undef glVertexPointer2
+	#undef glColorPointer2
+	#undef glTexCoordPointer2
+	#undef glDrawArrays2
+	#undef glGenBuffers2
+	#undef glBindBuffer2
+	#undef glBufferData2
+	#define glVertexPointer2    ctrglVertexPointer
+	#define glColorPointer2     ctrglColorPointer
+	#define glTexCoordPointer2  ctrglTexCoordPointer
+	#define glDrawArrays2       ctrglDrawArrays
+	#define glGenBuffers2       ctrglGenBuffers
+	#define glBindBuffer2       ctrglBindBuffer
+	#define glBufferData2       ctrglBufferData
+#endif
+
 
 //
 // Extensions
