@@ -146,8 +146,8 @@ void handleController() {
     trackpadFeed(2, (float)cs.dx / 156.0f, -(float)cs.dy / 156.0f);
 
     if(changed & KEY_DUP) Keyboard::feed(Keyboard::KEY_F5, (kHeld & KEY_DUP) ? 1 : 0);
-    if(changed & KEY_DRIGHT) Keyboard::feed(Keyboard::KEY_RIGHT, (kHeld & KEY_DRIGHT) ? 1 : 0);
-    if(changed & KEY_DLEFT) Keyboard::feed(Keyboard::KEY_LEFT, (kHeld & KEY_DLEFT) ? 1 : 0);
+    if(changed & (KEY_DRIGHT | KEY_ZR)) Keyboard::feed(Keyboard::KEY_RIGHT, (kHeld & (KEY_DRIGHT | KEY_ZR)) ? 1 : 0);
+    if(changed & (KEY_DLEFT | KEY_ZL)) Keyboard::feed(Keyboard::KEY_LEFT, (kHeld & (KEY_DLEFT | KEY_ZL)) ? 1 : 0);
     if(changed & KEY_DDOWN) Keyboard::feed(Keyboard::KEY_LSHIFT, (kHeld & KEY_DDOWN) ? 1 : 0);
     if(changed & KEY_A) Keyboard::feed(Keyboard::KEY_SPACE, (kHeld & KEY_A) ? 1 : 0);
     if(changed & KEY_X) Keyboard::feed(Keyboard::KEY_C, (kHeld & KEY_X) ? 1 : 0);
